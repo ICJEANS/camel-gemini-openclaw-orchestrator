@@ -1,0 +1,19 @@
+[project]
+name = "camel-gemini-openclaw-orchestrator"
+version = "0.1.0"
+description = "3-3-3 hybrid orchestration: Gemini chief + OpenClaw execution teams"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+gemini = ["google-genai>=0.3.0"]
+
+[project.scripts]
+camel-hybrid = "src.main:main"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["src"]
