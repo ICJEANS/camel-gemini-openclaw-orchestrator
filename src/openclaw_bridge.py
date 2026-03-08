@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import os
-import shlex
+from typing import List
 
 
 class OpenClawBridge:
@@ -12,22 +12,47 @@ class OpenClawBridge:
         self.session_key = session_key
         self.dry_run = dry_run
 
+    @staticmethod
+    def _resolve_target_args(session_key: str | None) -> List[str]:
+        """Build OpenClaw targeting args from a session key.
+
+        Priority:
+        1) UUID-like session id -> --session-id
+        2) session-key format "agent:<id>:..." -> --agent <id>
+        3) fallback -> --agent main
+        """
+        if session_key:
+            # UUID-like explicit session id
+            if "-" in session_key and session_key.count("-") >= 4:
+                return ["--session-id", session_key]
+
+            # OpenClaw session-key style: agent:<agentId>:...
+            parts = session_key.split(":")
+            if len(parts) >= 2 and parts[0] == "agent" and parts[1]:
+                return ["--agent", parts[1]]
+
+        return ["--agent", "main"]
+
+    def _build_cmd(self, task: str) -> List[str]:
+        return [
+            "openclaw",
+            "agent",
+            *self._resolve_target_args(self.session_key),
+            "--message",
+            task,
+            "--timeout",
+            "30",
+        ]
+
     async def execute(self, task: str) -> str:
         if self.dry_run:
             await asyncio.sleep(0.05)
             return f"DRY_RUN: {task[:120]}"
 
-        # Delegate to OpenClaw agent in non-interactive mode.
-        # Keep this minimal/safe; caller controls task scope.
-        quoted = shlex.quote(task)
-        cmd = f"openclaw agent --message {quoted} --timeout 30"
-        # OpenClaw CLI supports --session-id (not --session-key).
-        # If caller passes a UUID-like value, use it; otherwise run in default session routing.
-        if self.session_key and "-" in self.session_key and self.session_key.count("-") >= 4:
-            cmd += f" --session-id {shlex.quote(self.session_key)}"
+        cmd = self._build_cmd(task)
 
-        proc = await asyncio.create_subprocess_shell(
-            cmd,
+        proc = await asyncio.create_subprocess_exec(
+            *cmd,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
             env=os.environ.copy(),
