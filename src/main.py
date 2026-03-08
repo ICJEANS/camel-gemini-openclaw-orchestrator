@@ -13,7 +13,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("goal", help="Top-level goal for Gemini chief")
     p.add_argument("--session-key", default=None, help="OpenClaw target session key")
     p.add_argument("--live", action="store_true", help="Use real OpenClaw agent calls")
-    p.add_argument("--model", default="gemini-2.5-pro", help="Gemini model name")
+    p.add_argument("--model", default="gemini-2.5-flash", help="Gemini model name")
     return p
 
 

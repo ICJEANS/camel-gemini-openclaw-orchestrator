@@ -12,31 +12,37 @@ class GeminiChiefPlanner:
     Falls back to deterministic local templates otherwise.
     """
 
-    model: str = "gemini-2.5-pro"
+    model: str = "gemini-2.5-flash"
 
     async def make_plan(self, goal: str, domains: Iterable[str]) -> Dict[str, str]:
         domains = list(domains)
         if os.getenv("GEMINI_API_KEY"):
-            text = self._gemini_call(
-                f"Create one concise execution task per domain for this goal: {goal}\n"
-                f"Domains: {', '.join(domains)}\n"
-                "Return JSON object: {domain: task}."
-            )
-            parsed = self._safe_parse_json(text, domains)
-            if parsed:
-                return parsed
+            try:
+                text = self._gemini_call(
+                    f"Create one concise execution task per domain for this goal: {goal}\n"
+                    f"Domains: {', '.join(domains)}\n"
+                    "Return JSON object: {domain: task}."
+                )
+                parsed = self._safe_parse_json(text, domains)
+                if parsed:
+                    return parsed
+            except Exception:
+                pass
 
         return {d: f"{goal} ({d} 관점에서 실행)" for d in domains}
 
     async def summarize(self, goal: str, plan: Dict[str, str], team_runs: List[Any]) -> str:
         joined_runs = "\n\n".join(str(x) for x in team_runs)
         if os.getenv("GEMINI_API_KEY"):
-            text = self._gemini_call(
-                "Summarize this multi-team execution result briefly in Korean.\n"
-                f"Goal: {goal}\nPlan: {plan}\nResults:\n{joined_runs}"
-            )
-            if text:
-                return text.strip()
+            try:
+                text = self._gemini_call(
+                    "Summarize this multi-team execution result briefly in Korean.\n"
+                    f"Goal: {goal}\nPlan: {plan}\nResults:\n{joined_runs}"
+                )
+                if text:
+                    return text.strip()
+            except Exception:
+                pass
 
         return (
             f"[Gemini Chief Fallback Summary]\n"
