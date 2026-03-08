@@ -20,9 +20,11 @@ class OpenClawBridge:
         # Delegate to OpenClaw agent in non-interactive mode.
         # Keep this minimal/safe; caller controls task scope.
         quoted = shlex.quote(task)
-        cmd = f"openclaw agent --message {quoted}"
-        if self.session_key:
-            cmd += f" --session-key {shlex.quote(self.session_key)}"
+        cmd = f"openclaw agent --message {quoted} --timeout 30"
+        # OpenClaw CLI supports --session-id (not --session-key).
+        # If caller passes a UUID-like value, use it; otherwise run in default session routing.
+        if self.session_key and "-" in self.session_key and self.session_key.count("-") >= 4:
+            cmd += f" --session-id {shlex.quote(self.session_key)}"
 
         proc = await asyncio.create_subprocess_shell(
             cmd,
