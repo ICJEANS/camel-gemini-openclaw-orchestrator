@@ -25,9 +25,14 @@ class TeamLead:
     workers: List[Worker] = field(default_factory=list)
 
     async def run_team(self, task: str, bridge: OpenClawBridge) -> str:
-        results = await asyncio.gather(
-            *[w.run(task, bridge) for w in self.workers], return_exceptions=True
-        )
+        # Run workers sequentially to avoid OpenClaw session lock/contention.
+        results = []
+        for worker in self.workers:
+            try:
+                results.append(await worker.run(task, bridge))
+            except Exception as e:
+                results.append(e)
+
         lines = [f"팀장 {self.name} ({self.domain}) 결과:"]
         for idx, result in enumerate(results, start=1):
             if isinstance(result, Exception):
@@ -45,10 +50,13 @@ class GeminiChief:
     async def orchestrate(self, goal: str, leads: List[TeamLead], bridge: OpenClawBridge) -> str:
         plan = await self.planner.make_plan(goal, [lead.domain for lead in leads])
 
-        team_runs = await asyncio.gather(
-            *[lead.run_team(plan[lead.domain], bridge) for lead in leads],
-            return_exceptions=True,
-        )
+        # Run leads sequentially as well for stability with shared OpenClaw runtime.
+        team_runs = []
+        for lead in leads:
+            try:
+                team_runs.append(await lead.run_team(plan[lead.domain], bridge))
+            except Exception as e:
+                team_runs.append(e)
 
         return await self.planner.summarize(goal, plan, team_runs)
 
