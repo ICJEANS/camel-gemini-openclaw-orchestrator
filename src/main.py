@@ -18,7 +18,12 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 async def _run(args: argparse.Namespace) -> None:
-    bridge = OpenClawBridge(session_key=args.session_key, dry_run=not args.live)
+    session_key = args.session_key
+    if not session_key:
+        import os
+        session_key = os.getenv("OPENCLAW_SESSION_KEY")
+
+    bridge = OpenClawBridge(session_key=session_key, dry_run=not args.live)
     planner = GeminiChiefPlanner(model=args.model)
     system = ThreeThreeThreeSystem.default(bridge=bridge, planner=planner)
     output = await system.run(args.goal)
