@@ -33,7 +33,7 @@ class OpenClawBridge:
 
         return ["--agent", "main"]
 
-    def _build_cmd(self, task: str) -> List[str]:
+    def _build_cmd(self, task: str, timeout_seconds: int) -> List[str]:
         return [
             "openclaw",
             "agent",
@@ -41,15 +41,15 @@ class OpenClawBridge:
             "--message",
             task,
             "--timeout",
-            "30",
+            str(int(timeout_seconds)),
         ]
 
-    async def execute(self, task: str) -> str:
+    async def execute(self, task: str, timeout_seconds: int = 30) -> str:
         if self.dry_run:
             await asyncio.sleep(0.05)
             return f"DRY_RUN: {task[:120]}"
 
-        cmd = self._build_cmd(task)
+        cmd = self._build_cmd(task, timeout_seconds=timeout_seconds)
 
         proc = await asyncio.create_subprocess_exec(
             *cmd,

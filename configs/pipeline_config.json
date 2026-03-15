@@ -1,0 +1,24 @@
+{
+  "version": "2.0.0",
+  "execution": {
+    "domains": ["architecture", "implementation", "verification"],
+    "workersPerDomain": 3,
+    "mode": "sequential",
+    "retries": 1,
+    "timeoutSeconds": 30,
+    "sessionStrategy": "shared"
+  },
+  "router": {
+    "model": "gpt-4.1-mini",
+    "strictJson": true,
+    "fallbackKeywordRouting": true
+  },
+  "review": {
+    "includeActionHints": true
+  },
+  "artifacts": {
+    "runsDir": "runs",
+    "writeJsonl": true,
+    "writeMarkdown": true
+  }
+}

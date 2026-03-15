@@ -5,6 +5,7 @@ import asyncio
 import os
 import uuid
 
+from src.coop.config import load_pipeline_config
 from src.coop.executor import CoopExecutor
 from src.coop.models import RunArtifacts
 from src.coop.reporter import persist_run
@@ -18,23 +19,33 @@ def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="GPT-mini router + OpenClaw execution + CAMEL review pipeline")
     p.add_argument("goal", help="Top-level user goal")
     p.add_argument("--registry", default="configs/skills_registry.json")
-    p.add_argument("--model", default="gpt-4.1-mini")
+    p.add_argument("--config", default="configs/pipeline_config.json")
+    p.add_argument("--model", default=None, help="Override router model")
     p.add_argument("--live", action="store_true")
     p.add_argument("--session-key", default=None)
-    p.add_argument("--retries", type=int, default=1)
+    p.add_argument("--retries", type=int, default=None, help="Override retries")
     return p.parse_args()
 
 
 async def _run(args: argparse.Namespace) -> None:
-    plan = build_route_plan(args.goal, args.registry, model=args.model)
+    cfg = load_pipeline_config(args.config)
+    model = args.model or cfg.router_model
+    retries = cfg.execution.retries if args.retries is None else args.retries
+
+    plan = build_route_plan(args.goal, args.registry, model=model)
     roles = build_roles(args.goal, plan.selected_skills, plan.selected_mcps)
 
     session_key = args.session_key or os.getenv("OPENCLAW_SESSION_KEY")
     bridge = OpenClawBridge(session_key=session_key, dry_run=not args.live)
-    executor = CoopExecutor(bridge=bridge, retries=args.retries)
+    executor = CoopExecutor(
+        bridge=bridge,
+        retries=retries,
+        workers_per_domain=cfg.execution.workers_per_domain,
+        timeout_seconds=cfg.execution.timeout_seconds,
+    )
 
     all_results = []
-    for domain in ("architecture", "implementation", "verification"):
+    for domain in cfg.execution.domains:
         task = plan.teams.get(domain, f"{args.goal} ({domain})")
         all_results.extend(await executor.run_domain(domain, roles[domain], task))
 
@@ -45,10 +56,11 @@ async def _run(args: argparse.Namespace) -> None:
         plan=plan,
         results=all_results,
         review=review,
-        meta={"model": args.model, "live": args.live},
+        meta={"model": model, "live": args.live, "pipeline_version": cfg.version},
     )
-    jsonl_path, md_path = persist_run(art)
+    jsonl_path, md_path = persist_run(art, runs_dir=cfg.runs_dir)
 
+    print(f"[Pipeline v{cfg.version}]")
     print(review)
     print(f"\nArtifacts:\n- {jsonl_path}\n- {md_path}")
 

@@ -11,14 +11,19 @@ from ..openclaw_bridge import OpenClawBridge
 class CoopExecutor:
     bridge: OpenClawBridge
     retries: int = 1
+    workers_per_domain: int = 3
+    timeout_seconds: int = 30
 
     async def run_domain(self, domain: str, role_prompt: str, task: str) -> list[WorkerResult]:
         results: list[WorkerResult] = []
-        for idx in range(1, 4):
+        for idx in range(1, self.workers_per_domain + 1):
             worker = f"{domain}-ai-{idx}"
 
             async def _call() -> str:
-                return await self.bridge.execute(f"[{worker}] {role_prompt}\nTask: {task}")
+                return await self.bridge.execute(
+                    f"[{worker}] {role_prompt}\nTask: {task}",
+                    timeout_seconds=self.timeout_seconds,
+                )
 
             try:
                 out = await with_retry(_call, retries=self.retries, base_delay=1.0)
