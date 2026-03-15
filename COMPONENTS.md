@@ -10,6 +10,7 @@ This project is intentionally componentized so parts can be removed quickly.
    - Builds role prompts per domain.
 3. Executor (`src/coop/executor.py`)
    - Runs workers and applies retry/timeout policy.
+   - Uses GPT CLI bridge backend (`src/gpt_cli_bridge.py`).
 4. Retry Controller (`src/coop/retry_controller.py`)
    - Centralized retry/backoff logic.
 5. Reviewer (`src/coop/reviewer.py`)
@@ -25,3 +26,4 @@ This project is intentionally componentized so parts can be removed quickly.
 - Reporter off: skip `persist_run` call.
 - Retries off: set retries to 0.
 - Worker count reduce: set `workersPerDomain` in config.
+- GPT bridge off: replace `GPTCliBridge` with a stub or alternate bridge in `coop_pipeline.py`.

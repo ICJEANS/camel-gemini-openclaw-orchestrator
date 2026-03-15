@@ -10,14 +10,14 @@ Architecture Version: v1.0
 User Goal
   -> Gemini Chief (Planner/Supervisor)
       -> Team Lead A (architecture)
-          -> Worker A1/A2/A3 -> OpenClaw Execution Bridge
+          -> Worker A1/A2/A3 -> GPT CLI Bridge
       -> Team Lead B (implementation)
-          -> Worker B1/B2/B3 -> OpenClaw Execution Bridge
+          -> Worker B1/B2/B3 -> GPT CLI Bridge
       -> Team Lead C (verification)
-          -> Worker C1/C2/C3 -> OpenClaw Execution Bridge
+          -> Worker C1/C2/C3 -> GPT CLI Bridge
 
-OpenClaw Execution Bridge
-  -> sessions/tool actions (exec/read/edit/browser/message)
+GPT CLI Bridge
+  -> openai api chat.completions.create
   -> result collection
 
 Critic/Validator

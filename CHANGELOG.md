@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v3.0.0
+- Switched execution backend from OpenClaw delegation to GPT CLI bridge.
+- Added `src/gpt_cli_bridge.py` for worker task execution.
+- Updated coop pipeline/docs to GPT CLI-first architecture.
+- Added `tests/test_gpt_cli_bridge.py`.
+
 ## v2.0.0
 - Added full coop pipeline orchestration with required features 1~7:
   - GPT-mini router

@@ -5,7 +5,7 @@ Project: camel-gemini-openclaw-orchestrator
 Requirement Version: v1.0
 
 ## 1) Purpose
-coopAI(CAMEL) 기반 협업 오케스트레이터를 안정적으로 운영해, 장시간 작업에서도 멈춤/락/타임아웃을 줄이고 재현 가능한 결과를 얻는다.
+coopAI(CAMEL) 기반 협업 오케스트레이터를 GPT CLI 중심으로 운영해, 코딩 워크플로우를 단순화하고 재현 가능한 결과를 얻는다.
 
 ## 2) Scope
 - 포함:

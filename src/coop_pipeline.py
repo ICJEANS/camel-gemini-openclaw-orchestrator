@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import argparse
 import asyncio
-import os
 import uuid
 
 from src.coop.config import load_pipeline_config
@@ -12,17 +11,16 @@ from src.coop.reporter import persist_run
 from src.coop.reviewer import review_results
 from src.coop.role_assigner import build_roles
 from src.coop.router_gpt_mini import build_route_plan
-from src.openclaw_bridge import OpenClawBridge
+from src.gpt_cli_bridge import GPTCliBridge
 
 
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="GPT-mini router + OpenClaw execution + CAMEL review pipeline")
+    p = argparse.ArgumentParser(description="GPT-mini router + GPT CLI execution + CAMEL review pipeline")
     p.add_argument("goal", help="Top-level user goal")
     p.add_argument("--registry", default="configs/skills_registry.json")
     p.add_argument("--config", default="configs/pipeline_config.json")
     p.add_argument("--model", default=None, help="Override router model")
     p.add_argument("--live", action="store_true")
-    p.add_argument("--session-key", default=None)
     p.add_argument("--retries", type=int, default=None, help="Override retries")
     return p.parse_args()
 
@@ -35,8 +33,7 @@ async def _run(args: argparse.Namespace) -> None:
     plan = build_route_plan(args.goal, args.registry, model=model)
     roles = build_roles(args.goal, plan.selected_skills, plan.selected_mcps)
 
-    session_key = args.session_key or os.getenv("OPENCLAW_SESSION_KEY")
-    bridge = OpenClawBridge(session_key=session_key, dry_run=not args.live)
+    bridge = GPTCliBridge(model=model, dry_run=not args.live)
     executor = CoopExecutor(
         bridge=bridge,
         retries=retries,
