@@ -20,6 +20,8 @@ class PipelineConfig:
     version: str
     execution: ExecutionConfig
     router_model: str
+    execution_backend: str
+    execution_model: str
     runs_dir: str
 
 
@@ -37,5 +39,7 @@ def load_pipeline_config(path: str = "configs/pipeline_config.json") -> Pipeline
             session_strategy=ex.get("sessionStrategy", "shared"),
         ),
         router_model=obj.get("router", {}).get("model", "gpt-4.1-mini"),
+        execution_backend=obj.get("executionBackend", "codex-cli"),
+        execution_model=obj.get("executionModel", "gpt-5-codex"),
         runs_dir=obj.get("artifacts", {}).get("runsDir", "runs"),
     )

@@ -11,11 +11,12 @@ from src.coop.reporter import persist_run
 from src.coop.reviewer import review_results
 from src.coop.role_assigner import build_roles
 from src.coop.router_gpt_mini import build_route_plan
+from src.codex_cli_bridge import CodexCliBridge
 from src.gpt_cli_bridge import GPTCliBridge
 
 
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="GPT-mini router + GPT CLI execution + CAMEL review pipeline")
+    p = argparse.ArgumentParser(description="GPT-mini router + Codex/GPT CLI execution + CAMEL review pipeline")
     p.add_argument("goal", help="Top-level user goal")
     p.add_argument("--registry", default="configs/skills_registry.json")
     p.add_argument("--config", default="configs/pipeline_config.json")
@@ -33,7 +34,12 @@ async def _run(args: argparse.Namespace) -> None:
     plan = build_route_plan(args.goal, args.registry, model=model)
     roles = build_roles(args.goal, plan.selected_skills, plan.selected_mcps)
 
-    bridge = GPTCliBridge(model=model, dry_run=not args.live)
+    exec_model = cfg.execution_model
+    backend = cfg.execution_backend
+    if backend == "codex-cli":
+        bridge = CodexCliBridge(model=exec_model, dry_run=not args.live, workspace="/home/user1/.openclaw/workspace")
+    else:
+        bridge = GPTCliBridge(model=exec_model, dry_run=not args.live)
     executor = CoopExecutor(
         bridge=bridge,
         retries=retries,
@@ -53,7 +59,7 @@ async def _run(args: argparse.Namespace) -> None:
         plan=plan,
         results=all_results,
         review=review,
-        meta={"model": model, "live": args.live, "pipeline_version": cfg.version},
+        meta={"model": model, "execution_model": exec_model, "backend": backend, "live": args.live, "pipeline_version": cfg.version},
     )
     jsonl_path, md_path = persist_run(art, runs_dir=cfg.runs_dir)
 

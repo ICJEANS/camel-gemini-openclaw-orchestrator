@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v3.1.0
+- Switched default execution backend to Codex CLI (`executionBackend=codex-cli`).
+- Added `src/codex_cli_bridge.py` and tests.
+- Kept GPT CLI bridge as optional fallback backend.
+- Updated pipeline config/docs/changelog for Codex-first flow.
+
 ## v3.0.0
 - Switched execution backend from OpenClaw delegation to GPT CLI bridge.
 - Added `src/gpt_cli_bridge.py` for worker task execution.
