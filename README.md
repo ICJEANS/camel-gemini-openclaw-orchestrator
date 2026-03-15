@@ -39,6 +39,16 @@ python3 -m src.main "새 기능 설계하고 검증 계획 수립"
 python3 -m src.main "테스트 자동화 파이프라인 구축" --live --session-key "agent:main:telegram:direct:8709111146"
 ```
 
+### 3) GPT-mini Router + Skill/MCP 선택 + OpenClaw 실행 + CAMEL 리뷰
+
+```bash
+# dry-run
+python3 -m src.coop_pipeline "quick-web-demo를 검수하고 개선안 보고"
+
+# live
+python3 -m src.coop_pipeline "quick-web-demo를 검수하고 개선안 보고" --live
+```
+
 ## 환경변수
 
 `.env.example` 참고.

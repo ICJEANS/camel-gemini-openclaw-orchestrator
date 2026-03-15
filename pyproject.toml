@@ -10,6 +10,7 @@ gemini = ["google-genai>=0.3.0"]
 
 [project.scripts]
 camel-hybrid = "src.main:main"
+coop-pipeline = "src.coop_pipeline:main"
 
 [build-system]
 requires = ["setuptools>=68", "wheel"]

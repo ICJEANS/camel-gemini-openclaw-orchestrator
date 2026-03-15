@@ -1,0 +1,14 @@
+{
+  "skills": [
+    {"id": "code-review", "tags": ["review", "quality", "security", "performance"], "desc": "코드 품질/보안 검토"},
+    {"id": "web-build", "tags": ["web", "frontend", "html", "css", "js"], "desc": "웹 페이지/프론트 구현"},
+    {"id": "test-automation", "tags": ["test", "pytest", "qa", "verification"], "desc": "테스트 자동화"},
+    {"id": "orchestration", "tags": ["coop", "workflow", "agent", "routing"], "desc": "에이전트 오케스트레이션"}
+  ],
+  "mcps": [
+    {"id": "filesystem", "tags": ["file", "code", "edit", "read"], "desc": "파일 읽기/수정"},
+    {"id": "shell", "tags": ["exec", "test", "build", "command"], "desc": "쉘 실행"},
+    {"id": "browser", "tags": ["web", "scrape", "ui"], "desc": "브라우저 자동화"},
+    {"id": "messaging", "tags": ["notify", "telegram", "report"], "desc": "메시지 전송"}
+  ]
+}

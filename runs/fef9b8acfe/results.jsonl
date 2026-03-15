@@ -1,0 +1,9 @@
+{"worker": "architecture-ai-1", "domain": "architecture", "status": "ok", "output": "DRY_RUN: [architecture-ai-1] You are architecture lead. Focus on decomposition, constraints, interfaces.\nGoal: quick-web-demo를 검수"}
+{"worker": "architecture-ai-2", "domain": "architecture", "status": "ok", "output": "DRY_RUN: [architecture-ai-2] You are architecture lead. Focus on decomposition, constraints, interfaces.\nGoal: quick-web-demo를 검수"}
+{"worker": "architecture-ai-3", "domain": "architecture", "status": "ok", "output": "DRY_RUN: [architecture-ai-3] You are architecture lead. Focus on decomposition, constraints, interfaces.\nGoal: quick-web-demo를 검수"}
+{"worker": "implementation-ai-1", "domain": "implementation", "status": "ok", "output": "DRY_RUN: [implementation-ai-1] You are implementation lead. Focus on concrete tasks, code changes, command steps.\nGoal: quick-web"}
+{"worker": "implementation-ai-2", "domain": "implementation", "status": "ok", "output": "DRY_RUN: [implementation-ai-2] You are implementation lead. Focus on concrete tasks, code changes, command steps.\nGoal: quick-web"}
+{"worker": "implementation-ai-3", "domain": "implementation", "status": "ok", "output": "DRY_RUN: [implementation-ai-3] You are implementation lead. Focus on concrete tasks, code changes, command steps.\nGoal: quick-web"}
+{"worker": "verification-ai-1", "domain": "verification", "status": "ok", "output": "DRY_RUN: [verification-ai-1] You are verification lead. Focus on tests, edge cases, acceptance criteria.\nGoal: quick-web-demo를 검수"}
+{"worker": "verification-ai-2", "domain": "verification", "status": "ok", "output": "DRY_RUN: [verification-ai-2] You are verification lead. Focus on tests, edge cases, acceptance criteria.\nGoal: quick-web-demo를 검수"}
+{"worker": "verification-ai-3", "domain": "verification", "status": "ok", "output": "DRY_RUN: [verification-ai-3] You are verification lead. Focus on tests, edge cases, acceptance criteria.\nGoal: quick-web-demo를 검수"}
